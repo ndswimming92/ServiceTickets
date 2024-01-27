@@ -88,6 +88,25 @@ app.MapPost("/servicetickets", (ServiceTicket serviceTicket) =>
     return serviceTicket;
 });
 
+app.MapDelete("/deleteServiceTicket/{id}", (int id) =>
+{
+    var ticketToDelete = serviceTickets.FirstOrDefault(ticket => ticket.Id == id);
+    if (ticketToDelete != null)
+    {
+        serviceTickets.Remove(ticketToDelete);
+        // Return the updated list of service tickets
+        return Results.Ok(new
+        {
+            Message = $"Deleted: {id}.",
+            ServiceTickets = serviceTickets
+        });
+    }
+    else
+    {
+        return Results.NotFound();
+    }
+});
+
 
 // last assignment
 app.MapGet("/serviceTickets/incomplete/emergencies", () =>
