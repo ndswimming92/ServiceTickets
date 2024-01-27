@@ -16,8 +16,7 @@ List<HoneyRaesAPI.Models.ServiceTicket> serviceTickets = new List<HoneyRaesAPI.M
     new ServiceTicket() { Id = 0, CustomerId = 0, EmployeeId = 0, DateCompleted = DateTime.Now },
     new ServiceTicket() { CustomerId = 1, EmployeeId = 1, DateCompleted = DateTime.Now },
     new ServiceTicket() { Id = 2, CustomerId = 2, EmployeeId = 0, DateCompleted = DateTime.Now },
-    new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 1 },
-
+    new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 1, DateCompleted = null }
 };
 
 var builder = WebApplication.CreateBuilder(args);
@@ -50,7 +49,42 @@ app.MapGet("/servicetickets", () =>
 
 app.MapGet("/servicetickets/{id}", (int id) =>
 {
-    return serviceTickets.FirstOrDefault(st => st.Id == id);
+    ServiceTicket serviceTicket = serviceTickets.FirstOrDefault(st => st.Id == id);
+    if (serviceTicket == null)
+    {
+        return Results.NotFound();
+    }
+    serviceTicket.Employee = employees.FirstOrDefault(e => e.Id == serviceTicket.EmployeeId);
+    return Results.Ok(serviceTicket);
+});
+
+app.MapGet("/employees/{id}", (int id) =>
+{
+    Employee employee = employees.FirstOrDefault(e => e.Id == id);
+    if (employee == null)
+    {
+        return Results.NotFound();
+    }
+    employee.ServiceTickets = serviceTickets.Where(st => st.EmployeeId == id).ToList();
+    return Results.Ok(employee);
+});
+
+app.MapGet("/customers/{id}", (int id) =>
+{
+    Customer customer = customers.FirstOrDefault(c => c.Id == id);
+    if (customer == null)
+    {
+        return Results.NotFound();
+    }
+    return Results.Ok(customer);
 });
 
 app.Run();
+
+
+// last assignment
+app.MapGet("/serviceTickets/incomplete/emergencies", () =>
+{
+
+    return Results.Ok(serviceTickets);
+});
