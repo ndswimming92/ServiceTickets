@@ -134,13 +134,69 @@ app.MapPost("/servicetickets/{id}/complete", (int id) =>
     ticketToComplete.DateCompleted = DateTime.Today;
 });
 
-// last assignment
 
+
+
+
+// Last Assignment
+
+// 1. Emergencies
 app.MapGet("/serviceTickets/incomplete/emergencies", () =>
 {
 
     return Results.Ok(serviceTickets);
 });
+
+
+// 2. Unassigned
+app.MapGet("", () =>
+{
+
+});
+
+
+// 3. Inactive Customers
+app.MapGet("", () =>
+{
+
+});
+
+
+// 4. Available Employees
+app.MapGet("", () =>
+{
+
+});
+
+
+// 5. Employee's Customers
+app.MapGet("", () =>
+{
+
+});
+
+
+// 6. Employee of the Month
+app.MapGet("", () =>
+{
+
+});
+
+
+// 7. Past Ticket Review
+app.MapGet("", () =>
+{
+
+});
+
+
+// 8. Prioritized Tickets (Challenge)
+app.MapGet("", () =>
+{
+
+});
+
+
 
 app.Run();
 
