@@ -10,15 +10,18 @@ List<HoneyRaesAPI.Models.Customer> customers = new List<HoneyRaesAPI.Models.Cust
 List<HoneyRaesAPI.Models.Employee> employees = new List<HoneyRaesAPI.Models.Employee> 
 {
     new Employee() { Id = 0, Name = "Samantha Overall"},
-    new Employee() { Id = 1, Name = "Charles Spurges"}
+    new Employee() { Id = 1, Name = "Bowser Man"},
+    new Employee() { Id = 2, Name = "Mr. Mario"},
+    new Employee() { Id = 3, Name = "Mr. Luigi"},
+    new Employee() { Id = 4, Name = "Charles Spurges"}
 };
 List<HoneyRaesAPI.Models.ServiceTicket> serviceTickets = new List<HoneyRaesAPI.Models.ServiceTicket> 
 {
-    new ServiceTicket() { Id = 0, CustomerId = 0, EmployeeId = 0, Emergency = true, DateCompleted = DateTime.Now },
+    new ServiceTicket() { Id = 0, CustomerId = 0, EmployeeId = 4, Emergency = true, DateCompleted = DateTime.Now },
     new ServiceTicket() { CustomerId = 1, EmployeeId = 1, Emergency = true, DateCompleted = DateTime.Now },
     new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 0, Emergency = false, DateCompleted = DateTime.Now },
     new ServiceTicket() { Id = 2, CustomerId = 2, EmployeeId = 1, Emergency = true, DateCompleted = null },
-    new ServiceTicket() { Id = 3, CustomerId = 2, EmployeeId = 1, Emergency = true, DateCompleted = DateTime.Now },
+    new ServiceTicket() { Id = 3, CustomerId = 2, EmployeeId = 3, Emergency = true, DateCompleted = DateTime.Now },
     new ServiceTicket() { Id = 4, CustomerId = 3, Emergency = false, DateCompleted = null },
     new ServiceTicket() { Id = 5, CustomerId = 1, Emergency = false, DateCompleted = null },
     new ServiceTicket() { Id = 6, CustomerId = 0, Emergency = false, DateCompleted = null }
@@ -204,14 +207,31 @@ app.MapGet("/employees/Unassigned", () =>
 
 
 // 5. Employee's Customers
-/*app.MapGet("", () =>
+app.MapGet("/employees/{employeeId}/Customers", (int employeeId) =>
 {
+    var employee = employees.FirstOrDefault(e => e.Id == employeeId);
 
+    if (employee == null)
+    {
+        return Results.NotFound();
+    }
+
+    var customerIdsForEMployee = serviceTickets
+    .Where(st => st.EmployeeId == employeeId)
+    .Select(st => st.CustomerId)
+    .Distinct() 
+    .ToList();
+
+    var customersForEmployee = customers
+    .Where(customer => customerIdsForEMployee.Contains(customer.Id))
+    .ToList();
+
+    return Results.Ok(customersForEmployee);
 });
 
 
 // 6. Employee of the Month
-app.MapGet("", () =>
+/*app.MapGet("", () =>
 {
 
 });
