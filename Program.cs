@@ -9,11 +9,11 @@ List<HoneyRaesAPI.Models.Customer> customers = new List<HoneyRaesAPI.Models.Cust
 };
 List<HoneyRaesAPI.Models.Employee> employees = new List<HoneyRaesAPI.Models.Employee> 
 {
-    new Employee() { Id = 0, Name = "Samantha Overall"},
-    new Employee() { Id = 1, Name = "Bowser Man"},
-    new Employee() { Id = 2, Name = "Mr. Mario"},
-    new Employee() { Id = 3, Name = "Mr. Luigi"},
-    new Employee() { Id = 4, Name = "Charles Spurges"}
+    new Employee() { Id = 0, Name = "Samantha Overall", Specialty = "None"},
+    new Employee() { Id = 1, Name = "Bowser Man", Specialty = "Eating"},
+    new Employee() { Id = 2, Name = "Mr. Mario", Specialty = "Sleeping"},
+    new Employee() { Id = 3, Name = "Mr. Luigi", Specialty = "Cooking"},
+    new Employee() { Id = 4, Name = "Charles Spurges", Specialty = "Raging"}
 };
 List<HoneyRaesAPI.Models.ServiceTicket> serviceTickets = new List<HoneyRaesAPI.Models.ServiceTicket> 
 {
@@ -24,7 +24,7 @@ List<HoneyRaesAPI.Models.ServiceTicket> serviceTickets = new List<HoneyRaesAPI.M
     new ServiceTicket() { Id = 3, CustomerId = 2, EmployeeId = 3, Emergency = true, DateCompleted = DateTime.Now },
     new ServiceTicket() { Id = 4, CustomerId = 3, Emergency = false, DateCompleted = null },
     new ServiceTicket() { Id = 5, CustomerId = 1, Emergency = false, DateCompleted = null },
-    new ServiceTicket() { Id = 6, CustomerId = 0, Emergency = false, DateCompleted = null }
+    new ServiceTicket() { Id = 6, CustomerId = 0, EmployeeId = 3, Emergency = false, DateCompleted = DateTime.Now }
 };
 
 var builder = WebApplication.CreateBuilder(args);
@@ -231,14 +231,36 @@ app.MapGet("/employees/{employeeId}/Customers", (int employeeId) =>
 
 
 // 6. Employee of the Month
-/*app.MapGet("", () =>
+app.MapGet("/employees/completedMostServiceTicketsLastMonth", () =>
 {
+    DateTime lastMonthStart = DateTime.Now.AddMonths(-1).Date;
+    DateTime lastMonthEnd = DateTime.Now.Date;
 
+    var employeeIdWithMostCompletedTickets = serviceTickets
+        .Where(st => st.DateCompleted.HasValue && st.DateCompleted >= lastMonthStart && st.DateCompleted <= lastMonthEnd)
+        .GroupBy(st => st.EmployeeId)
+        .Select(group => new
+        {
+            EmployeeId = group.Key,
+            CompletedTicketsCount = group.Count()
+        })
+        .OrderByDescending(x => x.CompletedTicketsCount)
+        .FirstOrDefault()?.EmployeeId;
+
+    if (employeeIdWithMostCompletedTickets.HasValue)
+    {
+        var employeeWithMostCompletedTickets = employees.FirstOrDefault(e => e.Id == employeeIdWithMostCompletedTickets.Value);
+        return Results.Ok(employeeWithMostCompletedTickets);
+    }
+    else
+    {
+        return Results.NotFound();
+    }
 });
 
 
 // 7. Past Ticket Review
-app.MapGet("", () =>
+/*app.MapGet("", () =>
 {
 
 });
