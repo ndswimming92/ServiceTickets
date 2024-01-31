@@ -160,7 +160,8 @@ app.MapGet("/serviceTickets/incomplete/emergencies", () =>
 // 2. Unassigned
 app.MapGet("/serviceTickets/Unassigned", () =>
 {
-    var unassignedTickets = serviceTickets.Where(st => st.EmployeeId == null).ToList();
+    var unassignedTickets = serviceTickets
+    .Where(st => st.EmployeeId == null).ToList();
 
     return Results.Ok(unassignedTickets);
 });
@@ -272,10 +273,17 @@ app.MapGet("/serviceTickets/Completed/oldestFirst", () =>
 
 
 // 8. Prioritized Tickets (Challenge)
-/*app.MapGet("", () =>
+app.MapGet("serviceTickets/Incomplete/Order", () =>
 {
+    var incompleteTicketsOrdered = serviceTickets
+    .Where(st => st.DateCompleted.HasValue)
+    .OrderBy(st => st.Emergency)
+    .ThenBy(st => st.EmployeeId == null)
+    .ToList();
 
-});*/
+    return Results.Ok(incompleteTicketsOrdered);
+
+});
 
 
 
