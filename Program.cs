@@ -13,10 +13,10 @@ List<HoneyRaesAPI.Models.Employee> employees = new List<HoneyRaesAPI.Models.Empl
 };
 List<HoneyRaesAPI.Models.ServiceTicket> serviceTickets = new List<HoneyRaesAPI.Models.ServiceTicket> 
 {
-    new ServiceTicket() { Id = 0, CustomerId = 0, EmployeeId = 0, DateCompleted = DateTime.Now },
-    new ServiceTicket() { CustomerId = 1, EmployeeId = 1, DateCompleted = DateTime.Now },
-    new ServiceTicket() { Id = 2, CustomerId = 2, EmployeeId = 0, DateCompleted = DateTime.Now },
-    new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 1, DateCompleted = null }
+    new ServiceTicket() { Id = 0, CustomerId = 0, EmployeeId = 0, Emergency = true, DateCompleted = DateTime.Now },
+    new ServiceTicket() { CustomerId = 1, EmployeeId = 1, Emergency = true, DateCompleted = DateTime.Now },
+    new ServiceTicket() { Id = 2, CustomerId = 2, EmployeeId = 0, Emergency = false, DateCompleted = DateTime.Now },
+    new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 1, Emergency = false, DateCompleted = null }
 };
 
 var builder = WebApplication.CreateBuilder(args);
@@ -141,7 +141,7 @@ app.MapPost("/servicetickets/{id}/complete", (int id) =>
 // Last Assignment
 
 // 1. Emergencies
-app.MapGet("/serviceTickets/incomplete/emergencies", () =>
+/*app.MapGet("/serviceTickets/incomplete/emergencies", () =>
 {
 
     return Results.Ok(serviceTickets);
@@ -194,7 +194,7 @@ app.MapGet("", () =>
 app.MapGet("", () =>
 {
 
-});
+});*/
 
 
 
