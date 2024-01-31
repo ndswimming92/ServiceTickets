@@ -16,12 +16,12 @@ List<HoneyRaesAPI.Models.ServiceTicket> serviceTickets = new List<HoneyRaesAPI.M
 {
     new ServiceTicket() { Id = 0, CustomerId = 0, EmployeeId = 0, Emergency = true, DateCompleted = DateTime.Now },
     new ServiceTicket() { CustomerId = 1, EmployeeId = 1, Emergency = true, DateCompleted = DateTime.Now },
-    new ServiceTicket() { Id = 2, CustomerId = 2, EmployeeId = 0, Emergency = false, DateCompleted = DateTime.Now },
-    new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 1, Emergency = true, DateCompleted = null },
-    new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 1, Emergency = true, DateCompleted = DateTime.Now },
-    new ServiceTicket() { Id = 1, CustomerId = 3, Emergency = false, DateCompleted = null },
-    new ServiceTicket() { Id = 1, CustomerId = 1, Emergency = false, DateCompleted = null },
-    new ServiceTicket() { Id = 1, CustomerId = 0, Emergency = false, DateCompleted = null }
+    new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 0, Emergency = false, DateCompleted = DateTime.Now },
+    new ServiceTicket() { Id = 2, CustomerId = 2, EmployeeId = 1, Emergency = true, DateCompleted = null },
+    new ServiceTicket() { Id = 3, CustomerId = 2, EmployeeId = 1, Emergency = true, DateCompleted = DateTime.Now },
+    new ServiceTicket() { Id = 4, CustomerId = 3, Emergency = false, DateCompleted = null },
+    new ServiceTicket() { Id = 5, CustomerId = 1, Emergency = false, DateCompleted = null },
+    new ServiceTicket() { Id = 6, CustomerId = 0, Emergency = false, DateCompleted = null }
 };
 
 var builder = WebApplication.CreateBuilder(args);
@@ -186,14 +186,25 @@ app.MapGet("/customers/notClosedForAYear", () =>
 
 
 // 4. Available Employees
-/*app.MapGet("", () =>
+app.MapGet("/employees/Unassigned", () =>
 {
+    var unassignedEmployees = employees
+        .Where(employee =>
+        {
+            var assignedServiceTickets = serviceTickets
+                .Where(st => st.EmployeeId == employee.Id && !st.DateCompleted.HasValue)
+                .ToList();
 
+            return assignedServiceTickets.Count == 0;
+        })
+        .ToList();
+
+    return Results.Ok(unassignedEmployees);
 });
 
 
 // 5. Employee's Customers
-app.MapGet("", () =>
+/*app.MapGet("", () =>
 {
 
 });
