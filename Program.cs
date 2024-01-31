@@ -17,11 +17,11 @@ List<HoneyRaesAPI.Models.Employee> employees = new List<HoneyRaesAPI.Models.Empl
 };
 List<HoneyRaesAPI.Models.ServiceTicket> serviceTickets = new List<HoneyRaesAPI.Models.ServiceTicket> 
 {
-    new ServiceTicket() { Id = 0, CustomerId = 0, EmployeeId = 4, Emergency = true, DateCompleted = DateTime.Now },
-    new ServiceTicket() { CustomerId = 1, EmployeeId = 1, Emergency = true, DateCompleted = DateTime.Now },
-    new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 0, Emergency = false, DateCompleted = DateTime.Now },
+    new ServiceTicket() { Id = 0, CustomerId = 0, EmployeeId = 4, Emergency = true, DateCompleted = new DateTime(2024, 04, 15) },
+    new ServiceTicket() { CustomerId = 1, EmployeeId = 1, Emergency = true, DateCompleted = new DateTime(2020, 02, 15) },
+    new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 0, Emergency = false, DateCompleted = new DateTime(2012, 12, 31) },
     new ServiceTicket() { Id = 2, CustomerId = 2, EmployeeId = 1, Emergency = true, DateCompleted = null },
-    new ServiceTicket() { Id = 3, CustomerId = 2, EmployeeId = 3, Emergency = true, DateCompleted = DateTime.Now },
+    new ServiceTicket() { Id = 3, CustomerId = 2, EmployeeId = 3, Emergency = true, DateCompleted = new DateTime(2000, 09, 05) },
     new ServiceTicket() { Id = 4, CustomerId = 3, Emergency = false, DateCompleted = null },
     new ServiceTicket() { Id = 5, CustomerId = 1, Emergency = false, DateCompleted = null },
     new ServiceTicket() { Id = 6, CustomerId = 0, EmployeeId = 3, Emergency = false, DateCompleted = DateTime.Now }
@@ -260,14 +260,19 @@ app.MapGet("/employees/completedMostServiceTicketsLastMonth", () =>
 
 
 // 7. Past Ticket Review
-/*app.MapGet("", () =>
+app.MapGet("/serviceTickets/Completed/oldestFirst", () =>
 {
+    var completedTicketsOldestFirst = serviceTickets
+    .Where(st => st.DateCompleted.HasValue)
+    .OrderBy(st => st.DateCompleted)
+    .ToList();
 
+    return Results.Ok(completedTicketsOldestFirst);
 });
 
 
 // 8. Prioritized Tickets (Challenge)
-app.MapGet("", () =>
+/*app.MapGet("", () =>
 {
 
 });*/
