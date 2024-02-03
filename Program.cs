@@ -18,13 +18,13 @@ List<HoneyRaesAPI.Models.Employee> employees = new List<HoneyRaesAPI.Models.Empl
 List<HoneyRaesAPI.Models.ServiceTicket> serviceTickets = new List<HoneyRaesAPI.Models.ServiceTicket> 
 {
     new ServiceTicket() { Id = 0, CustomerId = 0, EmployeeId = 4, Emergency = true, DateCompleted = new DateTime(2024, 04, 15) },
-    new ServiceTicket() { CustomerId = 1, EmployeeId = 1, Emergency = true, DateCompleted = new DateTime(2020, 02, 15) },
-    new ServiceTicket() { Id = 1, CustomerId = 2, EmployeeId = 0, Emergency = false, DateCompleted = new DateTime(2012, 12, 31) },
-    new ServiceTicket() { Id = 2, CustomerId = 2, EmployeeId = 1, Emergency = true, DateCompleted = null },
-    new ServiceTicket() { Id = 3, CustomerId = 2, EmployeeId = 3, Emergency = true, DateCompleted = new DateTime(2000, 09, 05) },
-    new ServiceTicket() { Id = 4, CustomerId = 3, Emergency = false, DateCompleted = null },
-    new ServiceTicket() { Id = 5, CustomerId = 1, Emergency = false, DateCompleted = null },
-    new ServiceTicket() { Id = 6, CustomerId = 0, EmployeeId = 3, Emergency = false, DateCompleted = DateTime.Now }
+    new ServiceTicket() { Id = 1, CustomerId = 1, EmployeeId = 1, Emergency = true, DateCompleted = new DateTime(2020, 02, 15) },
+    new ServiceTicket() { Id = 2, CustomerId = 2, EmployeeId = 0, Emergency = false, DateCompleted = new DateTime(2012, 12, 31) },
+    new ServiceTicket() { Id = 3, CustomerId = 2, EmployeeId = 1, Emergency = true, DateCompleted = null },
+    new ServiceTicket() { Id = 4, CustomerId = 2, EmployeeId = 3, Emergency = true, DateCompleted = new DateTime(2000, 09, 05) },
+    new ServiceTicket() { Id = 5, CustomerId = 3, Emergency = false, DateCompleted = null },
+    new ServiceTicket() { Id = 6, CustomerId = 1, Emergency = false, DateCompleted = null },
+    new ServiceTicket() { Id = 7, CustomerId = 0, EmployeeId = 3, Emergency = false, DateCompleted = DateTime.Now }
 };
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +35,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -50,12 +51,12 @@ var summaries = new[]
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 };
 
-app.MapGet("/serviceTickets", () =>
+app.MapGet("/api/serviceTickets", () =>
 {
     return serviceTickets;
 });
 
-app.MapGet("/serviceTickets/{id}", (int id) =>
+app.MapGet("/api/serviceTickets/{id}", (int id) =>
 {
     ServiceTicket serviceTicket = serviceTickets.FirstOrDefault(st => st.Id == id);
     if (serviceTicket == null)
@@ -66,7 +67,7 @@ app.MapGet("/serviceTickets/{id}", (int id) =>
     return Results.Ok(serviceTicket);
 });
 
-app.MapGet("/employees/{id}", (int id) =>
+app.MapGet("/api/employees/{id}", (int id) =>
 {
     Employee employee = employees.FirstOrDefault(e => e.Id == id);
     if (employee == null)
@@ -77,7 +78,7 @@ app.MapGet("/employees/{id}", (int id) =>
     return Results.Ok(employee);
 });
 
-app.MapGet("/customers/{id}", (int id) =>
+app.MapGet("/api/customers/{id}", (int id) =>
 {
     Customer customer = customers.FirstOrDefault(c => c.Id == id);
     if (customer == null)
@@ -88,7 +89,7 @@ app.MapGet("/customers/{id}", (int id) =>
 });
 
 
-app.MapPost("/serviceTickets", (ServiceTicket serviceTicket) =>
+app.MapPost("/api/serviceTickets", (ServiceTicket serviceTicket) =>
 {
     // creates a new id (When we get to it later, our SQL database will do this for us like JSON Server did!)
     serviceTicket.Id = serviceTickets.Max(st => st.Id) + 1;
@@ -96,7 +97,7 @@ app.MapPost("/serviceTickets", (ServiceTicket serviceTicket) =>
     return serviceTicket;
 });
 
-app.MapDelete("/deleteServiceTicket/{id}", (int id) =>
+app.MapDelete("/api/deleteServiceTicket/{id}", (int id) =>
 {
     var ticketToDelete = serviceTickets.FirstOrDefault(ticket => ticket.Id == id);
     if (ticketToDelete != null)
@@ -117,7 +118,7 @@ app.MapDelete("/deleteServiceTicket/{id}", (int id) =>
 
 // Updating a service ticket.
 
-app.MapPut("/serviceTickets/{id}", (int id, ServiceTicket serviceTicket) =>
+app.MapPut("/api/serviceTickets/{id}", (int id, ServiceTicket serviceTicket) =>
 {
     ServiceTicket ticketToUpdate = serviceTickets.FirstOrDefault(st => st.Id == id);
     int ticketIndex = serviceTickets.IndexOf(ticketToUpdate);
@@ -136,7 +137,7 @@ app.MapPut("/serviceTickets/{id}", (int id, ServiceTicket serviceTicket) =>
 
 //Custom endpoint
 
-app.MapPost("/serviceTickets/{id}/Complete", (int id) =>
+app.MapPost("/api/serviceTickets/{id}/Complete", (int id) =>
 {
     ServiceTicket ticketToComplete = serviceTickets.FirstOrDefault(st => st.Id == id);
     ticketToComplete.DateCompleted = DateTime.Today;
@@ -149,7 +150,7 @@ app.MapPost("/serviceTickets/{id}/Complete", (int id) =>
 // Last Assignment
 
 // 1. Emergencies
-app.MapGet("/serviceTickets/incomplete/emergencies", () =>
+app.MapGet("/api/serviceTickets/incomplete/emergencies", () =>
 {
     var incompleteEmergencies = serviceTickets.Where(st => !st.DateCompleted.HasValue && st.Emergency).ToList();
 
@@ -158,7 +159,7 @@ app.MapGet("/serviceTickets/incomplete/emergencies", () =>
 
 
 // 2. Unassigned
-app.MapGet("/serviceTickets/Unassigned", () =>
+app.MapGet("/api/serviceTickets/Unassigned", () =>
 {
     var unassignedTickets = serviceTickets
     .Where(st => st.EmployeeId == null).ToList();
@@ -168,7 +169,7 @@ app.MapGet("/serviceTickets/Unassigned", () =>
 
 
 // 3. Inactive Customers
-app.MapGet("/customers/notClosedForAYear", () =>
+app.MapGet("/api/customers/notClosedForAYear", () =>
 {
     DateTime oneYearAgo = DateTime.Now.AddYears(-1);
 
@@ -190,7 +191,7 @@ app.MapGet("/customers/notClosedForAYear", () =>
 
 
 // 4. Available Employees
-app.MapGet("/employees/Unassigned", () =>
+app.MapGet("/api/employees/Unassigned", () =>
 {
     var unassignedEmployees = employees
         .Where(employee =>
@@ -208,7 +209,7 @@ app.MapGet("/employees/Unassigned", () =>
 
 
 // 5. Employee's Customers
-app.MapGet("/employees/{employeeId}/Customers", (int employeeId) =>
+app.MapGet("/api/employees/{employeeId}/Customers", (int employeeId) =>
 {
     var employee = employees.FirstOrDefault(e => e.Id == employeeId);
 
@@ -232,7 +233,7 @@ app.MapGet("/employees/{employeeId}/Customers", (int employeeId) =>
 
 
 // 6. Employee of the Month
-app.MapGet("/employees/completedMostServiceTicketsLastMonth", () =>
+app.MapGet("/api/employees/completedMostServiceTicketsLastMonth", () =>
 {
     DateTime lastMonthStart = DateTime.Now.AddMonths(-1).Date;
     DateTime lastMonthEnd = DateTime.Now.Date;
@@ -261,7 +262,7 @@ app.MapGet("/employees/completedMostServiceTicketsLastMonth", () =>
 
 
 // 7. Past Ticket Review
-app.MapGet("/serviceTickets/Completed/oldestFirst", () =>
+app.MapGet("/api/serviceTickets/Completed/oldestFirst", () =>
 {
     var completedTicketsOldestFirst = serviceTickets
     .Where(st => st.DateCompleted.HasValue)
@@ -273,7 +274,7 @@ app.MapGet("/serviceTickets/Completed/oldestFirst", () =>
 
 
 // 8. Prioritized Tickets (Challenge)
-app.MapGet("serviceTickets/Incomplete/Order", () =>
+app.MapGet("/api/serviceTickets/Incomplete/Order", () =>
 {
     var incompleteTicketsOrdered = serviceTickets
     .Where(st => st.DateCompleted.HasValue)
@@ -288,5 +289,3 @@ app.MapGet("serviceTickets/Incomplete/Order", () =>
 
 
 app.Run();
-
-
